@@ -1,0 +1,11 @@
+# Arquivos gerados pelo .NET e IDEs
+**/bin/
+**/obj/
+.vs/
+
+# Arquivos de usuário
+*.user
+*.suo
+
+# Dados do volume do docker-compose
+postgres-data/
