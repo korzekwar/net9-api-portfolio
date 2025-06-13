@@ -1,39 +1,41 @@
-version: '3.8'
-
-# 'services' define os contêineres que vamos executar
 services:
-  # Nosso serviço da API
   api:
     build:
       context: .
       dockerfile: src/Api/Dockerfile
     container_name: net9_api
     ports:
-      - "8080:8080" # Mapeia a porta 8080 do contêiner para a porta 8080 da sua máquina
+      - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      # Esta é a "string de conexão" que a API usará para encontrar o banco
       - "ConnectionStrings:DefaultConnection=Host=db;Port=5432;Database=productdb;Username=user;Password=password"
     depends_on:
-      - db # Diz ao Docker para iniciar o banco 'db' ANTES de iniciar a 'api'
+      db:
+        condition: service_healthy
+    # ESTA SEÇÃO É FUNDAMENTAL:
+    networks:
+      - app-network
 
-  # Nosso serviço de banco de dados
   db:
-    image: postgres:16 # Usa uma imagem pronta do PostgreSQL
+    image: postgres:16
     container_name: postgres_db
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=productdb
     ports:
-      - "5432:5432" # Mapeia a porta do Postgres para sua máquina (útil para debug)
+      - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data # Garante que os dados do banco não se percam
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d productdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app-network
 
-# 'volumes' e 'networks' são configurações auxiliares do Docker
 volumes:
   postgres-data:
 

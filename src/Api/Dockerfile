@@ -7,6 +7,7 @@ COPY *.sln .
 COPY src/Api/*.csproj ./src/Api/
 COPY src/Core/*.csproj ./src/Core/
 COPY src/Infrastructure/*.csproj ./src/Infrastructure/
+COPY tests/UnitTests/*.csproj ./tests/UnitTests/
 RUN dotnet restore
 
 # Copia o resto do código e publica a versão final
